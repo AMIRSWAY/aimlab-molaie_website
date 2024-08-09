@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+AMIRSWAY
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click the Box Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #game {
+            width: 1920px; /* Set width to 1920 */
+            height: 1080px; /* Set height to 1080 */
+            background-color: #3498db;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        #box {
+            width: 100px; /* Increased width */
+            height: 100px; /* Increased height */
+            background-color: #000; /* Black color */
+            border-radius: 50%; /* Make it a circle */
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+        #score, #timer {
+            font-size: 20px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="box"></div>
+    </div>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 30</div>
+    <audio id="popSound" src="pop.mp3" preload="auto"></audio> <!-- Add audio element -->
+    <script>
+        const box = document.getElementById('box');
+        const game = document.getElementById('game');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const popSound = document.getElementById('popSound'); // Get audio element
+
+        let score = 0;
+        let timeLeft = 30;
+        let timer;
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = 'Time: ' + timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert('Game Over! Your score is: ' + score);
+                    resetGame();
+                }
+            }, 1000);
+        }
+
+        function resetGame() {
+            score = 0;
+            timeLeft = 30;
+            scoreDisplay.textContent = 'Score: ' + score;
+            timerDisplay.textContent = 'Time: ' + timeLeft;
+            moveBox(); // Move box to start
+            startTimer();
+        }
+
+        function moveBox() {
+            const maxX = game.clientWidth - box.clientWidth;
+            const maxY = game.clientHeight - box.clientHeight;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            box.style.left = randomX + 'px';
+            box.style.top = randomY + 'px';
+        }
+
+        function boxClicked() {
+            score++;
+            scoreDisplay.textContent = 'Score: ' + score;
+            popSound.play(); // Play sound effect
+            moveBox(); // Move the box after scoring
+        }
+
+        // Add event listener for mouse clicks on the box
+        box.addEventListener('click', boxClicked);
+
+        resetGame(); // Start the game when the script loads
+		
+		
+
+    </script>
+</body>
+</html>
