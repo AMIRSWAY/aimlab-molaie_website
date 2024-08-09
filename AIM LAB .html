@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-
-AMIRSWAY
 <html lang="en">
 <head>
+AMIRSWAY
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Click the Box Game</title>
@@ -33,7 +32,7 @@ AMIRSWAY
             left: 0;
             cursor: pointer;
         }
-        #score, #timer {
+        #score, #timer, #accuracy {
             font-size: 20px;
             margin: 10px;
         }
@@ -45,17 +44,21 @@ AMIRSWAY
     </div>
     <div id="score">Score: 0</div>
     <div id="timer">Time: 30</div>
+    <div id="accuracy">Accuracy: 0%</div> <!-- Added accuracy display -->BEST accuracy 50%
     <audio id="popSound" src="pop.mp3" preload="auto"></audio> <!-- Add audio element -->
     <script>
         const box = document.getElementById('box');
         const game = document.getElementById('game');
         const scoreDisplay = document.getElementById('score');
         const timerDisplay = document.getElementById('timer');
+        const accuracyDisplay = document.getElementById('accuracy'); // Get accuracy display element
         const popSound = document.getElementById('popSound'); // Get audio element
 
         let score = 0;
         let timeLeft = 30;
         let timer;
+        let shotsTaken = 0;
+        let shotsHit = 0;
 
         function startTimer() {
             timer = setInterval(() => {
@@ -72,8 +75,11 @@ AMIRSWAY
         function resetGame() {
             score = 0;
             timeLeft = 30;
+            shotsTaken = 0;
+            shotsHit = 0;
             scoreDisplay.textContent = 'Score: ' + score;
             timerDisplay.textContent = 'Time: ' + timeLeft;
+            accuracyDisplay.textContent = 'Accuracy: 0%'; // Reset accuracy display
             moveBox(); // Move box to start
             startTimer();
         }
@@ -87,20 +93,45 @@ AMIRSWAY
             box.style.top = randomY + 'px';
         }
 
+        function updateAccuracy() {
+            const accuracy = (shotsTaken > 0) ? (shotsHit / shotsTaken) * 100 : 0;
+            accuracyDisplay.textContent = 'Accuracy: ' + accuracy.toFixed(2) + '%';
+        }
+
         function boxClicked() {
             score++;
+            shotsTaken++;
+            shotsHit++;
             scoreDisplay.textContent = 'Score: ' + score;
             popSound.play(); // Play sound effect
             moveBox(); // Move the box after scoring
+            updateAccuracy(); // Update accuracy display
+        }
+
+        function handleMissClick(event) {
+            // Check if the click was inside the box
+			const boxRect = box.getBoundingClientRect();
+            const isInsideBox = (
+                event.clientX >= boxRect.left &&
+                event.clientX <= boxRect.right &&
+                event.clientY >= boxRect.top &&
+                event.clientY <= boxRect.bottom
+            );
+
+            if (!isInsideBox) {
+                shotsTaken++;
+                updateAccuracy(); // Update accuracy display on missed click
+            }
         }
 
         // Add event listener for mouse clicks on the box
         box.addEventListener('click', boxClicked);
 
-        resetGame(); // Start the game when the script loads
-		
-		
+        // Add event listener for clicks on the game area to handle misses
+        game.addEventListener('click', handleMissClick);
 
+        resetGame(); // Start the game when the script loads
     </script>
 </body>
+</html>
 </html>
